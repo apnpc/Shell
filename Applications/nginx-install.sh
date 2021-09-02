@@ -146,7 +146,7 @@ function manageMenu() {
     esac
 }
 initialCheck
-# Check if OpenVPN is already installed
+# Check if Nginx is already installed
 if [ -d /usr/local/nginx/ ]; then
     manageMenu
 else
