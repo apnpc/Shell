@@ -1,12 +1,19 @@
 #!/bin/bash
 function isRoot() {
-    if [ "$EUID" -ne 0 ]; then
-        return 1
-    elif [ true ]; then
-        echo "请使用root账户"
-        exit 1
-    fi
+        if [ "$EUID" -ne 0 ]; then
+                return 1
+        fi
 }
+
+function initialCheck() {
+        if ! isRoot; then
+                echo "请使用root用户运行脚本"
+                exit 1
+        fi
+}
+
+initialCheck
+
 
 mkdir /opt/install /opt/software
 cd /opt/software || exit
@@ -17,6 +24,7 @@ fi
 
 ng_tgz=$(find /opt/software -name "nginx-1.18.0.tar.gz")
 install_dir=$(basename "${ng_tgz}" .tar.gz)
+
 
 echo "安装Nginx依赖包"
 yum install -y wget gcc zlib-devel bzip2-devel openssl openssl-devel ncurses-devel \
@@ -92,3 +100,26 @@ EOF
 systemctl daemon-reload
 systemctl status nginx
 systemctl enable nginx
+
+function manageMenu() {
+	echo "Welcome to nginx-install"
+	echo "The git repository is available at: https://github.com/apnpc/Shell/blob/main/Applications/nginx-install.sh"
+	echo ""
+	echo "It looks like Nginx is already installed."
+	echo ""
+	echo "What do you want to do?"
+	echo "   1) Remove Nginx"
+	echo "   2) Exit"
+	until [[ $MENU_OPTION =~ ^[1-2]$ ]]; do
+		read -rp "Select an option [1-2]: " MENU_OPTION
+	done
+
+	case $MENU_OPTION in
+	1)
+		removeNginx
+		;;
+	2)
+		exit 0
+		;;
+	esac
+}
