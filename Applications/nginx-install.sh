@@ -106,6 +106,7 @@ function removeNginx() {
         # Stop nginx
         systemctl disable nginx
         systemctl stop nginx
+        yum remove -y nginx
         # Delete user
         userdel nginx
         rm -f /var/spool/mail/nginx
